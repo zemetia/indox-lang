@@ -41,4 +41,4 @@ Conditional (if):
 Link the parse.js to your HTML Script
 <script src="parse.js" />
 after that you can call the indox-script with html tag
-<indox src="(resource)" />
+<indox src="(resource)" /> and your indox script will exported
