@@ -34,3 +34,11 @@ Logical boolean:
 
 Conditional (if):
 - jika (boolean)? (one code script) atau (else script)
+
+
+
+# HOW TO USE
+Link the parse.js to your HTML Script
+<script src="parse.js" />
+after that you can call the indox-script with html tag
+<indox src="(resource)" />
