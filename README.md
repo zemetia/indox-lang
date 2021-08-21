@@ -17,16 +17,20 @@ Storing variable
 - (variable) = (isi)
 - masukkan (variable) ke (isi)
 
+
 console.log:
 - tampil (isi)
+
 
 HTML OBJECT DOM:
 - just use # for id; . (dot) for class; and ~ for TagName
 - ex: #text_id = (isi), store (isi) to [id=text_id] innerHTML attribut
 
+
 Logical boolean:
 - dan, atau
 - ex: (1<=2 dan 3>4) atau 0 == 0
+
 
 Conditional (if):
 - jika (boolean)? (one code script) atau (else script)
