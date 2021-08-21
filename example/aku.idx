@@ -1,0 +1,4 @@
+pa = ~p
+tampil pa[0]
+masukkan 3 ke a
+jika 2+a==5?tampil "benar 5==5" atau tampil "salah "+(2+a)+"==5"

@@ -1,0 +1,23 @@
+tampil "haloo semuanya"
+tampil "namaku yoel"
+tampil "dari pemmatangsiantar"
+tampil "heloo"
+tampil "ayopyu all"
+tampil "script tampil berhasil"
+tampil "ini INDOX script"
+tampil "1+2-(10*3)/2 = "
+tampil 1+2-(10*3)/2
+masukkan 10>3 dan 2*3==6 ke hasil
+tampil "10>3 dan 2*3==6 => " + hasil
+#test = "Halooo nama ku yoel"
+#hasil = "yoel"
+masukkan "halo dan " ke hai
+tampil hai
+aku = "yoel"
+tampil hai + " " + aku
+tampil "mueheheh"
+~p = ~p+" sitorus"
+color = "green"
+angka = "1000x"
+masukkan "<font color='blue' size='20'>"+angka+" "+hai+"</font>" ke #p2
+a = 10
