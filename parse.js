@@ -5,19 +5,29 @@ let indoxSRCarr = [];
 let indoxVar = [];
 let script = [];
 let error = [];
+let functionAtt = [];//functionAtt['namafungsi']={script:[script],var:[variable]}
 let lm = 0;
 let selamaBool;
 var regex = {
 	logical:/(?<=[)\s])(?=dan|atau)(dan|atau)+(?=[(\s])/g,
-	cmd:/^((#)?\w)+/,
+	cmdx:/^((#)?\w)+/,cmd:/^((\.|#|~)?\w)+([(].*?[)])?/,
 	string: /((\").*?(\")|(\').*?(\'))/g,
 	digit: /\d+/,
 	var: /\w+/,
-	fungsi: /\w+[(].*?[)]/,
+	fungsi: /\w+[(].*?[)]/, fungsiB:/[(].*?[)]/,
 	DOM:/(#|\.|~)\w+/g,
-	cmdDOM:/^(#|\.|~)/}
+	cmdDOM:/^(#|\.|~)/,
+	htmlopen:/(<!)(.|\n)*?(!>)/,
+	regexi:/^((\.|#|~)?\w)+/}
 
 //================ initialize awal ====================
+function include(js){
+	link = document.getElementsByName('indox').src;
+	link.replace("parse.js",js);
+
+
+}
+
 function init(){
 	var IndoxTag = document.getElementsByTagName("indox");
 	for(let IdxIsi of IndoxTag){
@@ -45,21 +55,30 @@ document.addEventListener("DOMContentLoaded", ()=>{
 //======================================================
 //======================================================
 
-
-function switchCMD(cmd,text){
+function switchCMD(cmd,text,scr=[]){
 	if(!cmd)cmd="";
 	switch(cmd){
 			case "tampil":
 				text = changeVar(text);
 				console.log(eval(text));
 				break;
+
 			case "jika":
 				var bl = text.split("?");
+				var bla = eval(changeVar(bl[0]));
 				var at = bl[1].split("atau");
-				if(eval(changeVar(bl[0]))){
-					indox(at[0].trim());
-				} else {indox(at[1].trim());}
+				if(at[1]){
+					if(bla){indox(at[0].trim());} else {indox(at[1].trim());}
+				}else{
+					if(bla){indox(at[0].trim());}
+				}
 				break;
+
+			case "import":
+				imp = eval(changeVar(text));
+				LoadFile(imp);
+				break;
+
 			case "masukkan":
 				var bagi = text.split("ke");
 				//bagi[0] = matchLogical(bagi[0]);
@@ -71,16 +90,46 @@ function switchCMD(cmd,text){
 					masukkan(bagi[1].trim(),changeVar(bagi[0].trim()));
 				}
 				break;
+
 			case "selama":
-				selamaBool = text.replace(":","").trim();
-				lm = 1;
+				b = text.replace(":","").trim();
+				bool = eval(changeVar(b));
+				while(bool){
+					indoxScript(scr);
+					bool = eval(changeVar(b));
+				}
 				break;
+
+			case "fungsi":
+				/*fungsi anjay(x):tampil x.  anjay(100)->tampil(x=100)->tampil indoxVar['anjay']['x']*/
+				//functionAtt['namafungsi']={script:[script],var:[variable]}
+				text = text.replace(":","");
+				var va = text.match(/\w+/g);
+				var namaFungsi = va[0];
+				functionAtt[namaFungsi]={script:[],var:[]};
+				functionAtt[namaFungsi].script = scr;
+				va.shift();
+				for(nvar of va){
+				functionAtt[namaFungsi].var[nvar]=null;}
+				break;
+
 			case "":
 				break;
+
 			default:
+
 				cmd = cmd.replace("=","");
 				cmdDOM = cmd.match(regex.cmdDOM);
-				if(cmdDOM!=null){
+				if(brack=cmd.match(regex.fungsiB)){
+					var vrb = brack[0].match(/\w+/g);
+					for(var i = 0; i<vrb.length;i++){
+						vrb[i]=eval(changeVar(vrb[i]));
+					}
+					//isu: bagaimana cara memakai variablenya
+					var nama=cmd.match(/^\w+/)[0];
+					fungsi(nama,vrb);
+				}
+				else if(cmdDOM!=null){
 					if(cmdDOM[0]=="~"){cmd = cmd.substr(1)};
 					document.querySelector(cmd).innerHTML = eval(changeVar(text.replace("=","").trim()));
 				}else{
@@ -89,111 +138,6 @@ function switchCMD(cmd,text){
 					masukkan(cmd.trim(),changeVar(text));
 				}
 				cmdDOM = null;
-
 				break;
 		}
-}
-
-function indoxScript(script){
-	var tabScript = [];
-	for(let innerScript of script){
-		var regexi = /^((\.|#|~)?\w)+/;
-		innerScript = innerScript.split("//")[0];
-		var cmd = innerScript.match(regexi);
-		if(cmd){
-		var text = innerScript.replace(cmd[0],"");}
-		else {cmd=[""];}
-		//lm 0/1 dimana ada fungsi butuh script kaya while, if, loop, function,dll
-		if(lm==1){
-			if(innerScript.match("\t")){
-				tabScript.push(innerScript);
-			}else{
-				selama(selamaBool,tabScript);
-				tabScript=[];
-				lm=0;
-				switchCMD(cmd[0],text);''
-			}
-		}else{
-		switchCMD(cmd[0],text);}
-	}
-}
-
-function  masukkan(vari,isian){
-		indoxVar[vari] = eval(isian);
-}
-
-function indox(script){
-		var cmd = script.match(regex.cmd);
-		var text = script.replace(cmd[0],"")
-		switchCMD(cmd[0],text);
-}
-
-function changeVar(text){
-	var string = text.match(regex.string);
-	text = text.replace(regex.string,"!");
-	var sDOM = text.match(regex.DOM);
-	text = text.replace(regex.DOM,"#");
-	text = matchLogical(text);
-	text = text.replaceAll(/(?!\d)\w+/g,"indoxVar['$&']");
-	
-	if(sDOM){
-	for(i in sDOM){
-		if(sDOM[i][0]=="~"){sDOM[i] = sDOM[i].substr(1)};
-	text = text.replace("#","document.querySelector('"+sDOM[i]+"').innerHTML");
-	}}
-	if(string){
-	for(i in string){
-    text = text.replace("!",string[i]);
-	}}
-	return text;
-}
-
-function detectVariable(vari){
-	vari.replace(/\w+/,"");
-}
-
-function declareVar(varr,isi = null){
-	 if(isi==null){
-	 	return indoxVar[varr];
-	 } else {
-	 	indoxVar[varr] = isi;}
-}
-
-function intOperator(x){
-return eval(x);
-}
-
-function logical(x){
-	x = x.replaceAll(regex.logical,y=>danatau(y));
-	return x;
-}
-function danatau(text){
-	if(text.trim()=="dan"){return "&&";}
-	else if(text.trim()=="atau"){return "||";}
-}
-
-function matchLogical(text){
-	if(text.match(/(dan|atau)/g)!=null){
-		return logical(text);
-	}else{return text;}
-}
-
-function jika(kondisi,script){
-	if(logical(kondisi)){
-		scriptProg(script);
-	}
-}
-
-function selama(bool,script){
-	bool = matchLogical(changeVar(bool));
-	while(eval(bool)){
-		indoxScript(hapusTabArray(script));
-	}
-}
-
-function hapusTabArray(ar){
-	for(i in ar){
-		ar[i] = ar[i].replace("\t","");
-	}
-	return ar;
 }
