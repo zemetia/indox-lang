@@ -36,6 +36,9 @@ Conditional (if):
 - jika (boolean)? (one code script) atau (else script)
 
 
+Import:
+- import "(file)"
+
 
 # HOW TO USE
 Link the parse.js to your HTML Script
