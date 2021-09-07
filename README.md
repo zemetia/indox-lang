@@ -5,6 +5,9 @@ The Syntax is inspired by Python-Language.
 
 Applying variable:
 (variable) = (isi)
+```python
+nama = "yoel sitorus"
+```
         or
 masukkan (isi) ke (variable)
 
